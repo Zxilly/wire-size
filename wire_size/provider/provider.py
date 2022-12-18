@@ -6,8 +6,7 @@ from click import Command
 from prettytable import PrettyTable
 from typing import Dict
 
-from wire_size.downloader import MultiDownloader
-from wire_size.downloader.single_downloader import SingleDownloader
+from wire_size.downloader import MultiDownloader, SingleDownloader
 
 
 class Provider(ABC):
