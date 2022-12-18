@@ -1,1 +1,1 @@
-from .downloader import Downloader
+from .multi_downloader import MultiDownloader

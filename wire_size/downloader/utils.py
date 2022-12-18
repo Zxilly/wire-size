@@ -1,13 +1,12 @@
+import asyncio
 import functools
+import socket
+from contextlib import contextmanager
 from random import choice
 
 import aiohttp
-import socket
-from tqdm import tqdm
 from termcolor import colored, COLORS
-
-import asyncio
-from contextlib import contextmanager
+from tqdm import tqdm
 
 colors = list(COLORS)
 
@@ -46,29 +45,16 @@ def retry(coro_func):
                 return await coro_func(self, *args, **kwargs)
             except (aiohttp.ClientError, socket.gaierror) as exc:
                 try:
-                    msg = '%d %s' % (exc.code, exc.message)
                     if 400 <= exc.code < 500:
-                        tqdm.write(msg)
                         raise exc
                 except AttributeError:
-                    msg = str(exc) or exc.__class__.__name__
+                    pass
                 if tried <= self.max_tries:
                     sec = tried / 2
-                    tqdm.write(
-                        '%s() failed: %s, retry in %.1f seconds (%d/%d)' %
-                        (coro_func.__name__, msg,
-                         sec, tried, self.max_tries)
-                    )
                     await asyncio.sleep(sec)
                 else:
-                    tqdm.write(
-                        '%s() failed after %d tries: %s ' %
-                        (coro_func.__name__, self.max_tries, msg)
-                    )
                     raise exc
             except asyncio.TimeoutError:
-                tqdm.write(
-                    '%s() timeout, retry in 1 second' % coro_func.__name__)
                 await asyncio.sleep(1)
 
     return wrapper

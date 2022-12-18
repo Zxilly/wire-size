@@ -6,7 +6,8 @@ from click import Command
 from prettytable import PrettyTable
 from typing import Dict
 
-from wire_size.downloader import Downloader
+from wire_size.downloader import MultiDownloader
+from wire_size.downloader.single_downloader import SingleDownloader
 
 
 class Provider(ABC):
@@ -23,11 +24,25 @@ class Provider(ABC):
     def command(self) -> Command:
 
         @click.command(name=self.name)
-        def fn():
+        @click.option('--single', is_flag=True, help='Test with single connection', default=False)
+        @click.option('--multi', is_flag=True, help='Test with multiple connections', default=True)
+        def fn(single, multi):
+            if single and multi:
+                click.echo('You can only choose one mode')
+                return
+            if not single and not multi:
+                click.echo('You must choose one mode')
+                return
+
+            if single:
+                downloader = SingleDownloader
+            else:
+                downloader = MultiDownloader
+
             statistic = dict()
 
             for area, url in self.urls().items():
-                spend_time, file_size = asyncio.run(Downloader(area, url).download())
+                spend_time, file_size = asyncio.run(downloader(area, url).download())
                 download_speed = file_size / spend_time
                 statistic[area] = download_speed / 1024 / 1024
 
