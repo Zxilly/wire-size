@@ -10,8 +10,7 @@ from prettytable import PrettyTable
 
 
 class DigitalOceanProvider(Provider):
-    # areas = ["nyc1", "nyc2", "nyc3", "ams2", "ams3", "sgp1", "lon1", "fra1", "tor1", "sfo1", "sfo2", "sfo3", "blr1"]
-    areas = ["nyc1", "nyc2"]
+    areas = ["nyc1", "nyc2", "nyc3", "ams2", "ams3", "sgp1", "lon1", "fra1", "tor1", "sfo1", "sfo2", "sfo3", "blr1"]
     download_url_template = "http://speedtest-{}.digitalocean.com/10mb.test"
 
     @staticmethod
