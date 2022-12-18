@@ -1,6 +1,6 @@
 from typing import Dict
 
-from .provider import Provider
+from wire_size.provider.provider import Provider
 
 
 class DigitalOceanProvider(Provider):

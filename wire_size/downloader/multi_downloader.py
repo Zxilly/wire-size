@@ -3,8 +3,8 @@ import time
 
 import aiohttp
 
-from .downloader import Downloader
-from .utils import retry, ClosedRange, connecting
+from wire_size.downloader.downloader import Downloader
+from wire_size.downloader.utils import retry, ClosedRange
 
 
 class MultiDownloader(Downloader):

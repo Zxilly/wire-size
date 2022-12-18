@@ -1,5 +1,5 @@
 import click
-from provider import __all__ as providers
+from wire_size.provider import __all__ as providers
 
 
 @click.group()

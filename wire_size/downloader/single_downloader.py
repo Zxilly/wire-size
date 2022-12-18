@@ -2,7 +2,7 @@ from time import perf_counter
 
 import requests
 
-from .downloader import Downloader
+from wire_size.downloader.downloader import Downloader
 
 
 class SingleDownloader(Downloader):
