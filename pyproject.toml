@@ -1,7 +1,7 @@
 [tool.pdm]
 
 [project]
-name = "wire_size"
+name = "wire-size"
 version = "0.1.0"
 description = "Test bandwidth to cloud provider endpoint."
 authors = [

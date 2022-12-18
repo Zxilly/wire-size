@@ -4,7 +4,7 @@ from provider import __all__ as providers
 
 @click.group()
 def group():
-    click.echo("Start testing...")
+    pass
 
 
 for p in providers:

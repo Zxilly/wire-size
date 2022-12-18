@@ -1,10 +1,10 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Dict
 
 import click as click
 from click import Command
 from prettytable import PrettyTable
+from typing import Dict
 
 from wire_size.downloader import Downloader
 
@@ -27,7 +27,7 @@ class Provider(ABC):
             statistic = dict()
 
             for area, url in self.urls().items():
-                spend_time, file_size = asyncio.run(Downloader(url).download())
+                spend_time, file_size = asyncio.run(Downloader(area, url).download())
                 download_speed = file_size / spend_time
                 statistic[area] = download_speed / 1024 / 1024
 
