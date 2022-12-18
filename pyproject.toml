@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "wire-size"
+version = "0.1.0"
+description = "Test bandwidth to cloud provider endpoint."
+authors = ["Zxilly <zxilly@outlook.com>"]
+license = "GPLv3"
+readme = "README.md"
+packages = [{include = "wire_size"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tqdm = "^4.64.1"
+requests = "^2.28.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
