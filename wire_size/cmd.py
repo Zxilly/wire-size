@@ -8,7 +8,7 @@ def group():
 
 
 for p in providers:
-    group.add_command(p.command())
+    group.add_command(p().command())
 
 if __name__ == '__main__':
     group()
