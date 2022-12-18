@@ -61,9 +61,9 @@ def retry(coro_func):
 
 
 @contextmanager
-def connecting(msg='  Connecting'):
+def connecting(msg='Connecting'):
     length = len(msg)
-    print(colored(msg, 'grey', attrs=['bold']), end='', flush=True)
+    tqdm.write(colored(msg, 'grey', attrs=['bold']),end='')
 
     async def print_dots():
         while True:
@@ -71,7 +71,7 @@ def connecting(msg='  Connecting'):
                 await asyncio.sleep(1)
             except asyncio.CancelledError:
                 break
-            print(colored('.', 'grey', attrs=['bold']), end='', flush=True)
+            tqdm.write(colored('.', 'grey', attrs=['bold']), end='')
             nonlocal length
             length += 1
 

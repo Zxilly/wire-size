@@ -25,15 +25,7 @@ class Provider(ABC):
 
         @click.command(name=self.name)
         @click.option('--single', is_flag=True, help='Test with single connection', default=False)
-        @click.option('--multi', is_flag=True, help='Test with multiple connections', default=True)
-        def fn(single, multi):
-            if single and multi:
-                click.echo('You can only choose one mode')
-                return
-            if not single and not multi:
-                click.echo('You must choose one mode')
-                return
-
+        def fn(single):
             if single:
                 downloader = SingleDownloader
             else:
@@ -44,12 +36,16 @@ class Provider(ABC):
             for area, url in self.urls().items():
                 spend_time, file_size = asyncio.run(downloader(area, url).download())
                 download_speed = file_size / spend_time
-                statistic[area] = download_speed / 1024 / 1024
+                if spend_time > 0:
+                    statistic[area] = statistic[area] = download_speed / 1024 / 1024
+                else:
+                    statistic[area] = -1
 
             table = PrettyTable()
             table.field_names = ["Area", "Speed"]
             for area, speed in statistic.items():
-                table.add_row([area, f"{speed:.2f} MB/s"])
+                speed_fmt = f"{speed:.2f} MB/s" if speed > 0 else "Less than 100 KB/s"
+                table.add_row([area, speed_fmt])
             click.echo(table.get_string())
 
         return fn

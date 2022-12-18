@@ -19,10 +19,15 @@ class SingleDownloader(Downloader):
         size = int(head_response.headers["Content-Length"])
         self.render(self.name, size)
 
+        estimate_time = size / 1024 / 100
+
         response = requests.get(self.url, stream=True)
 
-        for chunk in response.iter_content(chunk_size=1024):
+        for chunk in response.iter_content():
             self.update(len(chunk))
+
+            if perf_counter() - start_time > estimate_time:
+                return -1, size
 
         self.close_bar()
 

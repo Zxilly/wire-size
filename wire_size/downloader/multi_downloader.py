@@ -2,15 +2,17 @@ import asyncio
 import time
 
 import aiohttp
-from tqdm import tqdm
 
-from .utils import retry, ClosedRange
 from .downloader import Downloader
+from .utils import retry, ClosedRange, connecting
 
 
 class MultiDownloader(Downloader):
     def __init__(self, name, url, num_tasks=4):
         super().__init__()
+        self.task = None
+        self.start_time = None
+        self.estimate_time = None
         self.bar = None
         self.blocks = None
         self.size = None
@@ -19,6 +21,7 @@ class MultiDownloader(Downloader):
         self.num_tasks = num_tasks
         self.max_tries = 3
         self.session = None
+        self.error = False
 
     @retry
     async def get_download_info(self):
@@ -66,28 +69,46 @@ class MultiDownloader(Downloader):
                 loop=asyncio.get_event_loop()
             )
 
+    async def check_timeout(self):
+        if time.perf_counter() - self.start_time > self.estimate_time:
+            self.error = True
+            raise TimeoutError()
+        else:
+            if len(self.blocks) == 0:
+                return
+            else:
+                await asyncio.sleep(0.1)
+                await self.check_timeout()
+
     async def download(self) -> (float, int):
         await self.require_session()
 
         self.size, file_type = await self.get_download_info()
 
+        self.estimate_time = self.size / 1024 / 100
+
         self.blocks = self.split()
 
-        start_time = time.perf_counter()
+        self.start_time = time.perf_counter()
 
         if self.num_tasks > self.size:
             self.num_tasks = 1
 
         self.render(self.name, self.size)
-        await asyncio.gather(
-            *(self.download_block(block_id) for block_id in self.blocks)
+
+        self.task = await asyncio.wait(
+            [*(self.download_block(block_id) for block_id in self.blocks), self.check_timeout()],
+            return_when=asyncio.FIRST_EXCEPTION
         )
 
         end_time = time.perf_counter()
 
         await self.close()
 
-        return end_time - start_time, self.size
+        if self.error:
+            return -1, self.size
+        else:
+            return end_time - self.start_time, self.size
 
     async def close(self):
         await self.session.close()
